@@ -25,13 +25,17 @@ module ErrorLoggerClient
       }
 
       uri = URI.join(@host, "/api/errors")
-      request = Net::Http::Post.new(uri)
+      request = Net::HTTP::Post.new(uri.request_uri)
       request["Content-Type"] = 'application/json'
       request["X-API-KEY"] = @api_key
       request.body = payload.to_json
 
-      Net::Http.start(uri.hostname, uri.port, use_ssl: uri.schema == 'https') do |http|
+      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request(request)
+      end
+
+      unless response.is_a?(Net::HTTPSuccess)
+        puts "[ErrorLoggerClient] Failed to report error: #{response.code} #{response.message}"
       end
     rescue => err
       warn "[ErrorLoggerClient] Failed to report error: #{err.message}"
