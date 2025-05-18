@@ -9,7 +9,7 @@ module ErrorLoggerClient
   # Your code goes here...
 
   class << self
-    def configure(api_key:, host)
+    def configure(api_key:, host:)
       @api_key = api_key
       @host = host
     end
